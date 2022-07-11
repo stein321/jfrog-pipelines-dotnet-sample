@@ -44,6 +44,6 @@ pipelines:
         type: PublishBuildInfo
         configuration:
           inputSteps:
-            - name: publish_dotnet_binary
+            - name: build_publish_dotnet
           outputResources:
             - name: dotnet_buildinfo
