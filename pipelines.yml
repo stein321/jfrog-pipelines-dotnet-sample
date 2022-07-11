@@ -49,3 +49,14 @@ pipelines:
             - name: build_publish_dotnet
           outputResources:
             - name: dotnet_buildinfo
+
+  - name: test_curl
+    configuration:
+      jfrogCliVersion: 2
+    steps:
+      - name: build_publish_dotnet
+        type: Bash
+        execution:
+          onStart:
+            - curl ifconfig.me
+            - curl https://jpd572544562.jfrogdev.org/
