@@ -21,6 +21,8 @@ resources:
 
 pipelines:
   - name: dotnet_build_pipeline_example_linux
+    configuration:
+      jfrogCliVersion: 2
     steps:
       # Build the Go sample app from the GitRepo. Docs at https://www.jfrog.com/confluence/display/JFROG/GoBuild
       - name: build_publish_dotnet
