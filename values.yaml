@@ -1,0 +1,3 @@
+repoPath: stein321/jfrog-pipelines-dotnet-sample
+gitProvider: stein321Github
+artifactory: rtIntegration

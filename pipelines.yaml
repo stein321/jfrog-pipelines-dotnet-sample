@@ -1,0 +1,49 @@
+# This config file is templatized so that it can be easily customized. Values can be provided with a values.yml at the root of this repository
+template: true   # required for local templates
+valuesFilePath: ./values.yml
+
+resources:
+  # Sample dotnet app in a GitRepo
+  - name: dotnet_repo
+    type: GitRepo
+    configuration:
+      path: {{ .Values.repoPath }}
+      branches:
+        include: main
+      gitProvider: {{ .Values.gitProvider }}
+
+  # Build info for the published Go app
+  - name: dotnet_buildinfo
+    type: BuildInfo
+    configuration:
+      sourceArtifactory: {{ .Values.artifactory }}
+
+
+pipelines:
+  - name: dotnet_build_pipeline_example
+    steps:
+      # Build the Go sample app from the GitRepo. Docs at https://www.jfrog.com/confluence/display/JFROG/GoBuild
+      - name: build_publish_dotnet
+        type: Powershell
+        configuration:
+          inputResources:
+            - name: dotnet_repo
+          integrations:
+            - name: {{ .Values.artifactory }}
+        execution:
+          onStart:
+            - nuget sources Add -Name Artifactory -Source $int_{{ .Values.artifactory }}_url/api/nuget/v3/nuget-local
+            - nuget setapikey $int_{{ .Values.artifactory }}_user:$int_{{ .Values.artifactory }}_apikey -Source Artifactory
+          onExecute:
+            - Set-Location $res_dotnet_repo_resourcePath
+            - dotnet build
+            - dotnet pack
+            - nuget push bin/Debug/jfrog-pipelines-dotnet-sample.1.0.0.nupkg -Source Artifactory
+      # Publish the Go sample app build info. Docs at https://www.jfrog.com/confluence/display/JFROG/PublishBuildInfo
+      - name: publish_build
+        type: PublishBuildInfo
+        configuration:
+          inputSteps:
+            - name: publish_dotnet_binary
+          outputResources:
+            - name: dotnet_buildinfo
