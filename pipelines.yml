@@ -24,7 +24,7 @@ pipelines:
     steps:
       # Build the Go sample app from the GitRepo. Docs at https://www.jfrog.com/confluence/display/JFROG/GoBuild
       - name: build_publish_dotnet
-        type: Powershell
+        type: Bash
         configuration:
           inputResources:
             - name: dotnet_repo
